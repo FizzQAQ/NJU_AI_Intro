@@ -18,6 +18,8 @@ import tools.ElapsedCpuTimer;
  * This is a Java port from Tom Schaul's VGDL - https://github.com/schaul/py-vgdl
  */
 public class Agent extends AbstractPlayer {
+    protected ArrayList<Observation> grid[][];
+    protected int block_size;
     public static Types.ACTIONS[] actions;//当前状态可获取的行动
     public  ArrayList<StateObservation> stateHadExList=new ArrayList<StateObservation>();/**搜索中已经出现过的状态列表
                                                                                         防止形成环路**/
@@ -56,9 +58,18 @@ public class Agent extends AbstractPlayer {
     }
     public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer)
     {
+        grid = so.getObservationGrid();
+        block_size = so.getBlockSize();
+        ArrayList<Types.ACTIONS> act = so.getAvailableActions();
+        actions = new Types.ACTIONS[act.size()];
+        for(int i = 0; i < actions.length; ++i)
+        {
+            actions[i] = act.get(i);
+        }
         dfs(so);
     }
     public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer) {
+        
         Types.ACTIONS toact=todoact.get(step);
         step++;
         return toact;

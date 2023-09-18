@@ -19,73 +19,50 @@ import tools.Vector2d;
  * Time: 21:45
  * This is a Java port from Tom Schaul's VGDL - https://github.com/schaul/py-vgdl
  */
-class Node {
-    Node parent =null;
-    StateObservation state=null;
-}
 public class Agent extends AbstractPlayer {
-
-    /**
-     * Random generator for the agent.
-     */
-    protected Random randomGenerator;
-
-    /**
-     * Observation grid.
-     */
     protected ArrayList<Observation> grid[][];
-
-    /**
-     * block size
-     */
     protected int block_size;
     public static Types.ACTIONS[] actions;
     public  ArrayList<StateObservation> stateHadExList=new ArrayList<StateObservation>();
     public  ArrayList<Types.ACTIONS> todoact=new ArrayList<Types.ACTIONS>();
     int step=0;
-    int steplimits=10000;
+    int steplimits=100;//深度限制
     boolean found=false;
-    /**
-     * Public constructor with state observation and time due.
-     * @param so state observation of the current game.
-     * @param elapsedTimer Timer for the controller creation.
-     */
      public void dfs(StateObservation so,int depth){
         for(int i=0;i<stateHadExList.size();i++){
             if(so.equalPosition(stateHadExList.get(i))){
                 return;
             }
-        }
-        if(depth>=steplimits){
+        }//对于状态so如果它已经在状态成员列表中存在，那么就直接结束当前状态搜索
+        if(depth>steplimits){
             return;
-        }
+        }//如果这一步已经超过了深度限制则直接返回
         stateHadExList.add(so);
         if(so.isGameOver()&&so.getGameWinner()==Types.WINNER.PLAYER_WINS){
             found=true;
             return;
-        }
+        }//如果已经能结束游戏将最终路径存在设置为true
         else if(so.isGameOver()&&so.getGameWinner()==Types.WINNER.PLAYER_LOSES){
             return;
-        }
-        ArrayList<Types.ACTIONS> act = so.getAvailableActions();
+        }//如果这一步会导致游戏输掉就结束这一步的搜索
+        ArrayList<Types.ACTIONS> act = so.getAvailableActions();//获取当前状态能进行的行动
         Types.ACTIONS[] toactions = new Types.ACTIONS[act.size()];
-        for(int i = 0; i < toactions.length; ++i)
+        for(int i = 0; i < toactions.length; ++i)//对能进行的行动进行遍历
         {
-            if(found)break;
+            if(found)break;//上一个行动能找到完成路径则直接停止遍历
             toactions[i] = act.get(i);
-            todoact.add(toactions[i]);
+            todoact.add(toactions[i]);//将本行动加入最终行动列表
             StateObservation stCopy=so.copy();
-            stCopy.advance(toactions[i]);
-            dfs(stCopy,depth+1);
-            if(!found){
-                todoact.remove(todoact.size()-1);
+            stCopy.advance(toactions[i]);//进行该行动，状态转变
+            dfs(stCopy,depth+1);//递归搜索，同时深度增加
+            if(!found){//这个行动不能完成即回溯
+                todoact.remove(todoact.size()-1);//将本行动从最终行动列表中退出
             }
          }
         return;
     }
     public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer)
     {
-        randomGenerator = new Random();
         grid = so.getObservationGrid();
         block_size = so.getBlockSize();
         ArrayList<Types.ACTIONS> act = so.getAvailableActions();

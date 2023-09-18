@@ -538,18 +538,20 @@ public class StateObservation implements Comparable<StateObservation>{
     public double hope(StateObservation stateObs){
         ArrayList<Observation>[] fixedPositions = stateObs.getImmovablePositions();
         ArrayList<Observation>[] movingPositions = stateObs.getMovablePositions();
-         Vector2d avatarpos=stateObs.getAvatarPosition();
-        if(movingPositions!=null&&movingPositions.length!=0&&movingPositions[0].size()!=0){
-        Vector2d keypos = movingPositions[0].get(0).position;
-        return Math.abs(avatarpos.x-keypos.x)+Math.abs(avatarpos.y-keypos.y);
+        Vector2d avatarpos=stateObs.getAvatarPosition();//获取精灵坐标
+        if(movingPositions!=null&&movingPositions.length!=0&&movingPositions[0].size()!=0){/**保证不会出现空指针和数组越界的情况
+                                                                                            因为在获取到钥匙之后仍然调用钥匙位置会显示数组越界
+                                                                                            如果在游戏结束时调用会显示空指针**/
+        Vector2d keypos = movingPositions[0].get(0).position;//获取钥匙位置
+        return Math.abs(avatarpos.x-keypos.x)+Math.abs(avatarpos.y-keypos.y);//返回精灵和目标的曼哈顿距离
         }
         if(!stateObs.isGameOver()){
         Vector2d goalpos = fixedPositions[1].get(0).position; //目标的坐标
-        return Math.abs(goalpos.x-avatarpos.x)+Math.abs(goalpos.y-avatarpos.y);//曼哈顿距离
+        return Math.abs(goalpos.x-avatarpos.x)+Math.abs(goalpos.y-avatarpos.y);//返回和目标的曼哈顿距离
         }
         return 0;
     }
-    public int compareTo(StateObservation o){
+    public int compareTo(StateObservation o){//可以让StateObservation直接比较，便于排序
        return (int)hope(this)-(int)hope(o);
     }
 
