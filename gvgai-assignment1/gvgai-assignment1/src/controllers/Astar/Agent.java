@@ -29,7 +29,8 @@ public class Agent extends AbstractPlayer {
                                                                                             防止形成环路**/
     public  ArrayList<Types.ACTIONS> todoact=new ArrayList<Types.ACTIONS>();//最终路径
     int step=0;//执行最终路径的序号
-    int steplimits=100;//是否找到最终路径
+    int steplimits=50;//是否找到最终路径
+    boolean start=true;
     boolean found=false;
     /**
      * Public constructor with state observation and time due.
@@ -90,7 +91,8 @@ public class Agent extends AbstractPlayer {
         {
             actions[i] = act.get(i);
         }
-        dfs(so,0);
+        dfs(so, 0);
+        
     }
    
 
@@ -102,6 +104,7 @@ public class Agent extends AbstractPlayer {
      * @return An action for the current state
      */
     public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer) {
+      
         Types.ACTIONS toact=todoact.get(step);
         step++;
         return toact;

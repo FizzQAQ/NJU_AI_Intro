@@ -32,7 +32,6 @@ public class StateObservation implements Comparable<StateObservation>{
     public StateObservation(ForwardModel a_model) {
         model = a_model;
     }
-
     /**
      * Returns an exact copy of the state observation object.
      *
@@ -540,12 +539,11 @@ public class StateObservation implements Comparable<StateObservation>{
         ArrayList<Observation>[] movingPositions = stateObs.getMovablePositions();
         Vector2d avatarpos=stateObs.getAvatarPosition();//获取精灵坐标
         if(movingPositions!=null&&movingPositions.length!=0&&movingPositions[0].size()!=0){/**保证不会出现空指针和数组越界的情况
-                                                                                            因为在获取到钥匙之后仍然调用钥匙位置会显示数组越界
-                                                                                            如果在游戏结束时调用会显示空指针**/
-        Vector2d keypos = movingPositions[0].get(0).position;//获取钥匙位置
+                                                                                      因为在获取到钥匙之后仍然调用钥匙位置会显示数组越界
+                                                                                            如果在游戏结束时调用会显示空指针**/Vector2d keypos = movingPositions[0].get(0).position;//获取钥匙位置
         return Math.abs(avatarpos.x-keypos.x)+Math.abs(avatarpos.y-keypos.y);//返回精灵和目标的曼哈顿距离
         }
-        if(!stateObs.isGameOver()){
+        if(!stateObs.isGameOver()&&movingPositions==null){
         Vector2d goalpos = fixedPositions[1].get(0).position; //目标的坐标
         return Math.abs(goalpos.x-avatarpos.x)+Math.abs(goalpos.y-avatarpos.y);//返回和目标的曼哈顿距离
         }
